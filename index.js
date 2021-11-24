@@ -143,23 +143,20 @@ function getDeptId(data) {
 function addRolePrompt() {
     deptListing();
     inquirer.prompt(rolePrompt).then(answers => {
-        console.log(answers);
         if (answers) {
             getDeptId(answers);
-
-            db.query(`SELECT id FROM department WHERE name = "${answers.department}"`, (err, results) => {
-                id = results[0].id;
-            });
+            console.log(getDeptId(answers));
+            
             // Adding role to the database
-            db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.name}', '${answers.salary}', '${id}')`, (err, results) => {
-                console.log(`Added ${answers.name} to the database`)
-            })
+            // db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.name}', '${answers.salary}', '${deptId}')`, (err, results) => {
+            //     console.log(`Added ${answers.name} to the database`)
+            //     console.log(err);
+            // })
            
             // prompts();
         }
     })
 };
-
 
 
     
