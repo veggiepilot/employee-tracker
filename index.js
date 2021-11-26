@@ -51,7 +51,7 @@ const prompts = () => {inquirer
                     addEmployeePrompt();
                 break;
                 case 'Update Employee Role':
-                console.log(answers.prompt)
+                    updateEmployeePrompt();
                 break;
                 // View All roles
                 case 'View All Roles':
@@ -86,9 +86,7 @@ const prompts = () => {inquirer
                         })
                 break;
                 case 'Quit':
-                process.exit;
-                console.log(answers.prompt)
-                break;
+                process.exit();
             }
         }
     })
@@ -97,6 +95,7 @@ const prompts = () => {inquirer
 let depts = [];
 let roles = [];
 let managers = [ {name: 'None', value: 'NULL'} ];
+let employees = [];
 
 const getDepartments =  () => {
     db.query(`SELECT * FROM department`, (err, results) => {
@@ -109,12 +108,22 @@ const getDepartments =  () => {
     })
 }
 
+const getEmployees = () => {
+    db.query(`SELECT id,
+    concat(employee.first_name, ' ', employee.last_name) AS full_name
+    FROM employee`, (err, results) => {
+        results.forEach(e => {
+            employees.push({name: e.full_name, value: e.id});
+        });
+    })
+    
+};
+
 const deptListing =  () => {
     db.query(`SELECT id, name FROM department`, (err, results) => {
         results.forEach(e => {
             depts.push({name: e.name, value: e.id});
         })
-        console.log(depts);
     })
 };
 
@@ -130,7 +139,7 @@ const rolesListing = () => {
 const managersListing = () => {
     db.query(`SELECT id,
     concat(employee.first_name, ' ', employee.last_name) AS name
-    FROM employee`, (err, results) => {
+    FROM employee`, (err, results) => {  
         results.forEach(e => {
             managers.push({name: e.name, value: e.id});
         })
@@ -183,6 +192,21 @@ const employeePrompt = [
     }
 ];
 
+const employeeUpdatePrompt = [
+    {
+        type: 'list',
+        name: 'employee',
+        message: `Which employee's role do you want to update?`,
+        choices: employees
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: `Which role do you want to assign the selected employee?`,
+        choices: roles
+    }
+];
+
 function addRolePrompt() {
     deptListing();
     inquirer.prompt(rolePrompt).then(answers => {
@@ -210,6 +234,20 @@ function addEmployeePrompt() {
     })
 };
 
+function updateEmployeePrompt() {
+    getEmployees();
+    rolesListing();
+    inquirer.prompt(employeeUpdatePrompt).then(answers => {
+        // if (answers) {
+        //     // Adding role to the database
+        //     // db.query(
+        //     //     `UPDATE employee (first_name, last_name, role_id, manager_id) SET ('${answers.first_name}', '${answers.last_name}', ${answers.role}, ${answers.manager})`, (err, results) => {
+        //     //     console.log(`Added ${answers.first_name} ${answers.last_name} to the database`);
+        //     // })  
+        //     // prompts();
+        // }
+    })
+};
 
 //UPDATE
     // Update Employee Role
