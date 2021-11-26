@@ -3,6 +3,11 @@ const db = require('./db/connection');
 
 const inquirer = require('inquirer');
 
+let depts = [];
+let roles = [];
+let managers = [ {name: 'None', value: 'NULL'} ];
+let employees = [];
+
 const prompts = () => {inquirer
     .prompt([
         {
@@ -92,10 +97,7 @@ const prompts = () => {inquirer
     })
 };
 
-let depts = [];
-let roles = [];
-let managers = [ {name: 'None', value: 'NULL'} ];
-let employees = [];
+
 
 const getDepartments =  () => {
     db.query(`SELECT * FROM department`, (err, results) => {
@@ -116,7 +118,6 @@ const getEmployees = () => {
             employees.push({name: e.full_name, value: e.id});
         });
     })
-    
 };
 
 const deptListing =  () => {
@@ -134,7 +135,6 @@ const rolesListing = () => {
         })
     })
 };
-
 
 const managersListing = () => {
     db.query(`SELECT id,
@@ -237,6 +237,7 @@ function addEmployeePrompt() {
 function updateEmployeePrompt() {
     getEmployees();
     rolesListing();
+    
     inquirer.prompt(employeeUpdatePrompt).then(answers => {
         // if (answers) {
         //     // Adding role to the database
