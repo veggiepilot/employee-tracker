@@ -48,7 +48,7 @@ const prompts = () => {inquirer
                     });    
                 break;
                 case 'Add Employee':
-                console.log(answers.prompt)
+                    addEmployeePrompt();
                 break;
                 case 'Update Employee Role':
                 console.log(answers.prompt)
@@ -95,6 +95,8 @@ const prompts = () => {inquirer
 };
 
 let depts = [];
+let roles = [];
+let managers = ['None'];
 
 const getDepartments =  () => {
     db.query(`SELECT * FROM department`, (err, results) => {
@@ -106,13 +108,34 @@ const getDepartments =  () => {
         }  
     })
 }
+
 const deptListing =  () => {
-    db.query(`SELECT name FROM department`, (err, results) => {
+    db.query(`SELECT id, name FROM department`, (err, results) => {
         results.forEach(e => {
-            depts.push(e.name);
+            depts.push({name: e.name, value: e.id});
+        })
+        console.log(depts);
+    })
+};
+
+const rolesListing = () => {
+    db.query(`SELECT id, title FROM role`, (err, results) => {
+        results.forEach(e => {
+            roles.push({name: e.title, value: e.id});
         })
     })
-}
+};
+
+
+const managersListing = () => {
+    db.query(`SELECT id,
+    concat(employee.first_name, ' ', employee.last_name) AS name
+    FROM employee`, (err, results) => {
+        results.forEach(e => {
+            managers.push({name: e.name, value: e.id});
+        })
+    })
+};
 
 const rolePrompt = [
     
@@ -133,27 +156,57 @@ const rolePrompt = [
         choices: depts
     }
     
-]
-function getDeptId(data) {
-    db.query(`SELECT id FROM department WHERE name = "${data.department}"`, (err, results) => {
-        return results[0].id;
-    });
-}
+];
+
+const employeePrompt = [
+    {
+        type: 'input',
+        name: 'first_name',
+        message: `What is the employee's first name?`
+    },
+    {
+        type: 'input',
+        name: 'last_name',
+        message: `What is the employee's last name?`
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: `What is the employee's role?`,
+        choices: roles
+    }, 
+    {
+        type: 'list',
+        name: 'manager',
+        message: `Who is the employee's manager?`,
+        choices: managers
+    }
+];
 
 function addRolePrompt() {
     deptListing();
     inquirer.prompt(rolePrompt).then(answers => {
         if (answers) {
-            getDeptId(answers);
-            console.log(getDeptId(answers));
-            
             // Adding role to the database
-            // db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.name}', '${answers.salary}', '${deptId}')`, (err, results) => {
-            //     console.log(`Added ${answers.name} to the database`)
-            //     console.log(err);
-            // })
-           
-            // prompts();
+            db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.name}', '${answers.salary}', '${answers.department}')`, (err, results) => {
+                console.log(`Added ${answers.name} to the database`)
+            })  
+            prompts();
+        }
+    })
+};
+
+function addEmployeePrompt() {
+    rolesListing();
+    managersListing();
+    inquirer.prompt(employeePrompt).then(answers => {
+        if (answers) {
+            console.log(answers);
+            // Adding role to the database
+            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.first_name}', '${answers.last_name}', ${answers.role}, ${answers.manager})`, (err, results) => {
+                console.log(`Added ${answers.first_name} ${answers.last_name} to the database`)
+            })  
+            prompts();
         }
     })
 };
@@ -170,12 +223,6 @@ function addRolePrompt() {
             // Show all employees including none option
         // added <employee> to the database
 
-    // Add a role
-        // What is the name of the role?
-        // What is the salary of the role?
-        // Which department does the roll belong to?
-        // Show all the choices of the departments to choose from?
-        // Added <role> to the database
 
 //UPDATE
     // Update Employee Role
