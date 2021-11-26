@@ -192,20 +192,20 @@ const employeePrompt = [
     }
 ];
 
-const employeeUpdatePrompt = [
-    {
-        type: 'list',
-        name: 'employee',
-        message: `Which employee's role do you want to update?`,
-        choices: employees
-    },
-    {
-        type: 'list',
-        name: 'role',
-        message: `Which role do you want to assign the selected employee?`,
-        choices: roles
-    }
-];
+// const employeeUpdatePrompt = [
+//     {
+//         type: 'list',
+//         name: 'employee',
+//         message: `Which employee's role do you want to update?`,
+//         choices: employees
+//     },
+//     {
+//         type: 'list',
+//         name: 'role',
+//         message: `Which role do you want to assign the selected employee?`,
+//         choices: roles
+//     }
+// ];
 
 function addRolePrompt() {
     deptListing();
@@ -237,7 +237,21 @@ function addEmployeePrompt() {
 function updateEmployeePrompt() {
     getEmployees();
     rolesListing();
-    
+    const employeeUpdatePrompt = [
+        {
+            type: 'list',
+            name: 'employee',
+            message: `Which employee's role do you want to update?`,
+            choices: employees
+        },
+        {
+            type: 'list',
+            name: 'role',
+            message: `Which role do you want to assign the selected employee?`,
+            choices: roles
+        }
+    ];
+    console.log(employeeUpdatePrompt)
     inquirer.prompt(employeeUpdatePrompt).then(answers => {
         // if (answers) {
         //     // Adding role to the database
