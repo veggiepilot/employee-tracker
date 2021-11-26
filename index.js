@@ -96,7 +96,7 @@ const prompts = () => {inquirer
 
 let depts = [];
 let roles = [];
-let managers = ['None'];
+let managers = [ {name: 'None', value: 'NULL'} ];
 
 const getDepartments =  () => {
     db.query(`SELECT * FROM department`, (err, results) => {
@@ -201,27 +201,14 @@ function addEmployeePrompt() {
     managersListing();
     inquirer.prompt(employeePrompt).then(answers => {
         if (answers) {
-            console.log(answers);
             // Adding role to the database
             db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.first_name}', '${answers.last_name}', ${answers.role}, ${answers.manager})`, (err, results) => {
-                console.log(`Added ${answers.first_name} ${answers.last_name} to the database`)
+                console.log(`Added ${answers.first_name} ${answers.last_name} to the database`);
             })  
             prompts();
         }
     })
 };
-
-
-    
-//CREATE
-    // Add employee 
-        // What is the employee's first name?
-        // What is the employee's last name?
-        // What is the employee's role?
-            //Show all roles to choose from
-        // Who is the employee's manager?
-            // Show all employees including none option
-        // added <employee> to the database
 
 
 //UPDATE
