@@ -3,10 +3,10 @@ const db = require('./db/connection');
 
 const inquirer = require('inquirer');
 
-let depts = [];
-let roles = [];
-let managers = [ {name: 'None', value: 'NULL'} ];
-let employees = [];
+let depts       = [];
+let roles       = [];
+let managers    = [ {name: 'None', value: 'NULL'} ];
+let employees   = [];
 
 const prompts = () => {inquirer
     .prompt([
@@ -237,7 +237,6 @@ function addEmployeePrompt() {
 function updateEmployeePrompt() {
     rolesListing();
     inquirer.prompt(employeeUpdatePrompt).then(answers => {
-        console.log(answers);
         if (answers) {
             //Adding role to the database
             db.query(
