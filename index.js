@@ -97,8 +97,6 @@ const prompts = () => {inquirer
     })
 };
 
-
-
 const getDepartments =  () => {
     db.query(`SELECT * FROM department`, (err, results) => {
         if (err) {
@@ -192,20 +190,20 @@ const employeePrompt = [
     }
 ];
 
-// const employeeUpdatePrompt = [
-//     {
-//         type: 'list',
-//         name: 'employee',
-//         message: `Which employee's role do you want to update?`,
-//         choices: employees
-//     },
-//     {
-//         type: 'list',
-//         name: 'role',
-//         message: `Which role do you want to assign the selected employee?`,
-//         choices: roles
-//     }
-// ];
+const employeeUpdatePrompt = [
+    {
+        type: 'list',
+        name: 'employee',
+        message: `Which employee's role do you want to update?`,
+        choices: employees
+    },
+    {
+        type: 'list',
+        name: 'role',
+        message: `Which role do you want to assign the selected employee?`,
+        choices: roles
+    }
+];
 
 function addRolePrompt() {
     deptListing();
@@ -215,6 +213,7 @@ function addRolePrompt() {
             db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.name}', '${answers.salary}', '${answers.department}')`, (err, results) => {
                 console.log(`Added ${answers.name} to the database`)
             })  
+            getEmployees();
             prompts();
         }
     })
@@ -229,48 +228,27 @@ function addEmployeePrompt() {
             db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.first_name}', '${answers.last_name}', ${answers.role}, ${answers.manager})`, (err, results) => {
                 console.log(`Added ${answers.first_name} ${answers.last_name} to the database`);
             })  
+            getEmployees();
             prompts();
         }
     })
 };
 
 function updateEmployeePrompt() {
-    getEmployees();
     rolesListing();
-    const employeeUpdatePrompt = [
-        {
-            type: 'list',
-            name: 'employee',
-            message: `Which employee's role do you want to update?`,
-            choices: employees
-        },
-        {
-            type: 'list',
-            name: 'role',
-            message: `Which role do you want to assign the selected employee?`,
-            choices: roles
-        }
-    ];
-    console.log(employeeUpdatePrompt)
     inquirer.prompt(employeeUpdatePrompt).then(answers => {
-        // if (answers) {
-        //     // Adding role to the database
-        //     // db.query(
-        //     //     `UPDATE employee (first_name, last_name, role_id, manager_id) SET ('${answers.first_name}', '${answers.last_name}', ${answers.role}, ${answers.manager})`, (err, results) => {
-        //     //     console.log(`Added ${answers.first_name} ${answers.last_name} to the database`);
-        //     // })  
-        //     // prompts();
-        // }
+        console.log(answers);
+        if (answers) {
+            //Adding role to the database
+            db.query(
+                `UPDATE employee SET role_id = ${answers.role} WHERE id =  '${answers.employee}'`, (err, results) => {
+                console.log(`Updated employee's role`);
+            })  
+            prompts();
+        }
     })
 };
-
-//UPDATE
-    // Update Employee Role
-        // Which employee's role do you want to update?
-            //Show all employees
-        // Which role do you want to assign the selected employee?
-            //Show all roles
-    
+getEmployees();
 prompts();
 
     
